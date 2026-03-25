@@ -1,0 +1,33 @@
+# Node
+node_modules/
+
+# .NET build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS/Rider settings
+.vs/
+.idea/
+*.DotSettings.user
+
+# Publish output
+publish/
+*.pubxml
+*.pubxml.user
+
+# NuGet
+*.nupkg
+.nuget/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

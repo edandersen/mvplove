@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MVP Love</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            950: '#0f172a',
+                            900: '#1e1b4b',
+                            800: '#312e81',
+                            700: '#3730a3',
+                            600: '#4338ca',
+                            500: '#6366f1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator, .htmx-request.htmx-indicator { display: flex; }
+        .htmx-request #mvp-results { opacity: 0.5; transition: opacity 0.2s; }
+        [x-cloak] { display: none !important; }
+    </style>
+    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col text-slate-800">
+
+    <!-- Top navigation -->
+    <nav class="bg-gradient-to-r from-indigo-950 via-indigo-900 to-violet-900 text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a asp-controller="Mvp" asp-action="Index" class="flex items-center gap-3 group">
+                <div class="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center text-xl group-hover:bg-white/25 transition-colors">🏆</div>
+                <div>
+                    <div class="font-bold text-base leading-tight tracking-tight">MVP Love</div>
+                    <div class="text-xs text-indigo-300 leading-tight">Microsoft MVP Browser</div>
+                </div>
+            </a>
+            <div class="flex items-center gap-2 text-sm">
+                <a asp-controller="Mvp" asp-action="Index" class="px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-white/10 transition-colors">Browse</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page content -->
+    <main class="flex-1">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-950 text-indigo-300 text-sm py-4 mt-8">
+        <div class="max-w-screen-2xl mx-auto px-4 flex items-center justify-between">
+            <span>© 2026 MVP Love</span>
+            <span class="text-xs text-indigo-500">Powered by ASP.NET Core 10 · HTMX · Tailwind CSS</span>
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

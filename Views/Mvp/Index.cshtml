@@ -1,0 +1,185 @@
+@model MvpBrowseViewModel
+@{ ViewData["Title"] = "Browse MVPs"; }
+
+@* Hero strip *@
+<div class="bg-gradient-to-br from-indigo-950 via-indigo-900 to-violet-900 text-white py-8 px-4">
+    <div class="max-w-screen-2xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">Browse Microsoft MVPs</h1>
+                <p class="text-indigo-300 text-sm mt-1">
+                    @Model.TotalMvps profiles loaded · @Model.TotalResults shown
+                    @if (Model.HasFilters)
+                    {
+                        <span class="ml-2 inline-flex items-center gap-1 bg-indigo-700/60 text-indigo-200 px-2 py-0.5 rounded-full text-xs">
+                            Filtered
+                        </span>
+                    }
+                </p>
+            </div>
+            @* Inline search for hero *@
+            <div class="w-full md:w-96">
+                <input type="text"
+                       name="q"
+                       value="@Model.Query"
+                       placeholder="Search by name, tech, country…"
+                       autocomplete="off"
+                       class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm"
+                       hx-get="/Mvp/Grid"
+                       hx-trigger="input changed delay:400ms"
+                       hx-target="#mvp-results"
+                       hx-include="#filter-form"
+                       hx-indicator="#search-spinner" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Loading bar indicator *@
+<div id="search-spinner" class="htmx-indicator h-1 bg-gradient-to-r from-indigo-400 to-violet-400 animate-pulse"></div>
+
+@* Main layout: sidebar + content *@
+<div class="max-w-screen-2xl mx-auto px-4 py-6 flex gap-6 items-start">
+
+    @* ── Sidebar ── *@
+    <aside class="hidden lg:block w-64 flex-shrink-0 sticky top-20">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <form id="filter-form">
+                @* Hidden fields to preserve state *@
+                <input type="hidden" name="q" value="@Model.Query" id="hidden-q" />
+                <input type="hidden" name="sort" value="@Model.Sort" id="hidden-sort" />
+
+                <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                    <span class="font-semibold text-slate-700 text-sm">Filters</span>
+                    @if (Model.HasFilters)
+                    {
+                        <a href="/Mvp" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Clear all</a>
+                    }
+                </div>
+
+                @* Award Category *@
+                <div class="p-4 border-b border-slate-100">
+                    <div class="font-medium text-xs uppercase tracking-wider text-slate-400 mb-3">Award Category</div>
+                    <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
+                        @foreach (var opt in Model.AwardOptions)
+                        {
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox"
+                                       name="award"
+                                       value="@opt.Value"
+                                       class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
+                                       @(Model.SelectedAwards.Contains(opt.Value) ? "checked" : "")
+                                       hx-get="/Mvp/Grid"
+                                       hx-trigger="change"
+                                       hx-target="#mvp-results"
+                                       hx-include="#filter-form" />
+                                <span class="text-sm text-slate-600 group-hover:text-slate-900 flex-1 leading-tight">@opt.Value</span>
+                                <span class="text-xs text-slate-400 font-medium">@opt.Count</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                @* Country *@
+                <div class="p-4 border-b border-slate-100">
+                    <div class="font-medium text-xs uppercase tracking-wider text-slate-400 mb-3">Country</div>
+                    <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                        @foreach (var opt in Model.CountryOptions.Take(20))
+                        {
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox"
+                                       name="country"
+                                       value="@opt.Value"
+                                       class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
+                                       @(Model.SelectedCountries.Contains(opt.Value) ? "checked" : "")
+                                       hx-get="/Mvp/Grid"
+                                       hx-trigger="change"
+                                       hx-target="#mvp-results"
+                                       hx-include="#filter-form" />
+                                <span class="text-sm text-slate-600 group-hover:text-slate-900 flex-1 leading-tight truncate">@opt.Value</span>
+                                <span class="text-xs text-slate-400 font-medium">@opt.Count</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                @* Technology Focus *@
+                <div class="p-4">
+                    <div class="font-medium text-xs uppercase tracking-wider text-slate-400 mb-3">Technology Focus</div>
+                    <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                        @foreach (var opt in Model.TechOptions.Take(20))
+                        {
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox"
+                                       name="tech"
+                                       value="@opt.Value"
+                                       class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
+                                       @(Model.SelectedTech.Contains(opt.Value) ? "checked" : "")
+                                       hx-get="/Mvp/Grid"
+                                       hx-trigger="change"
+                                       hx-target="#mvp-results"
+                                       hx-include="#filter-form" />
+                                <span class="text-sm text-slate-600 group-hover:text-slate-900 flex-1 leading-tight truncate">@opt.Value</span>
+                                <span class="text-xs text-slate-400 font-medium">@opt.Count</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </aside>
+
+    @* ── Main Content ── *@
+    <div class="flex-1 min-w-0">
+        @* Sort bar *@
+        <div class="flex items-center justify-between mb-4 gap-4">
+            <p class="text-sm text-slate-500">
+                <span class="font-semibold text-slate-700">@Model.TotalResults</span> result@(Model.TotalResults != 1 ? "s" : "")
+                @if (!string.IsNullOrWhiteSpace(Model.Query))
+                {
+                    <span> for "<em>@Model.Query</em>"</span>
+                }
+            </p>
+            <select name="sort"
+                    id="sort-select"
+                    class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    hx-get="/Mvp/Grid"
+                    hx-trigger="change"
+                    hx-target="#mvp-results"
+                    hx-include="#filter-form">
+                <option value="" @(string.IsNullOrEmpty(Model.Sort) ? "selected" : "")>Sort: A–Z</option>
+                <option value="years_desc" @(Model.Sort == "years_desc" ? "selected" : "")>Most years in program</option>
+                <option value="years_asc"  @(Model.Sort == "years_asc"  ? "selected" : "")>Fewest years in program</option>
+                <option value="country"    @(Model.Sort == "country"    ? "selected" : "")>Country</option>
+            </select>
+        </div>
+
+        @* Grid (initially server-rendered, updated by HTMX) *@
+        <div id="mvp-results">
+            @await Html.PartialAsync("_Grid", new MvpGridViewModel
+            {
+                Results          = Model.Results,
+                TotalResults     = Model.TotalResults,
+                Page             = Model.Page,
+                PageSize         = Model.PageSize,
+                Query            = Model.Query,
+                SelectedAwards   = Model.SelectedAwards,
+                SelectedCountries = Model.SelectedCountries,
+                SelectedTech     = Model.SelectedTech,
+                Sort             = Model.Sort,
+            })
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Keep hidden form fields in sync with hero search and sort
+    document.querySelector('input[name="q"].text-white')?.addEventListener('input', function() {
+        document.getElementById('hidden-q').value = this.value;
+    });
+    document.getElementById('sort-select')?.addEventListener('change', function() {
+        document.getElementById('hidden-sort').value = this.value;
+    });
+</script>
+}

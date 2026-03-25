@@ -1,0 +1,297 @@
+@model MvpProfile
+@{ ViewData["Title"] = Model.Name; }
+
+@* Back link *@
+<div class="max-w-screen-xl mx-auto px-4 pt-6">
+    <a href="/Mvp" class="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Browse
+    </a>
+</div>
+
+@* Hero *@
+<div class="bg-gradient-to-br from-indigo-950 via-indigo-900 to-violet-900 text-white mt-4 py-10 px-4">
+    <div class="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">
+        @* Avatar *@
+        <div class="flex-shrink-0">
+            @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+            {
+                <img src="@Model.ProfilePictureUrl"
+                     alt="@Model.Name"
+                     class="w-28 h-28 rounded-2xl object-cover border-4 border-white/20 shadow-xl"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                <div class="w-28 h-28 rounded-2xl bg-gradient-to-br from-indigo-400 to-violet-500 items-center justify-center text-white font-bold text-4xl shadow-xl" style="display:none">
+                    @Model.Initials
+                </div>
+            }
+            else
+            {
+                <div class="w-28 h-28 rounded-2xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-bold text-4xl shadow-xl">
+                    @Model.Initials
+                </div>
+            }
+        </div>
+
+        @* Name + headline + meta *@
+        <div class="flex-1 min-w-0">
+            <h1 class="text-3xl font-bold tracking-tight">@Model.Name</h1>
+            @if (!string.IsNullOrEmpty(Model.Headline))
+            {
+                <p class="text-indigo-200 mt-1 text-lg">@Model.Headline</p>
+            }
+
+            @* Award badges *@
+            @if (Model.AwardCategory.Count > 0)
+            {
+                <div class="flex flex-wrap gap-2 mt-3">
+                    @foreach (var award in Model.AwardCategory)
+                    {
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold @MvpProfile.AwardBadgeClasses(award)">
+                            🏆 @award
+                        </span>
+                    }
+                </div>
+            }
+
+            @* Meta row *@
+            <div class="flex flex-wrap items-center gap-4 mt-4 text-sm text-indigo-300">
+                @if (!string.IsNullOrEmpty(Model.Country))
+                {
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        @Model.Country
+                    </span>
+                }
+                @if (Model.YearsInProgram.HasValue && Model.YearsInProgram > 0)
+                {
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        @Model.YearsInProgram year@(Model.YearsInProgram != 1 ? "s" : "") as MVP
+                    </span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Company))
+                {
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        @Model.Company
+                    </span>
+                }
+                <a href="@Model.ProfileUrl" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    Official Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Content *@
+<div class="max-w-screen-xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        @* Left column: Bio + Social *@
+        <div class="lg:col-span-2 space-y-6">
+
+            @* Biography *@
+            @if (!string.IsNullOrWhiteSpace(Model.Biography))
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h2 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                        <span class="text-indigo-500">📋</span> Biography
+                    </h2>
+                    <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">@Model.Biography</p>
+                </div>
+            }
+
+            @* Contributions *@
+            @if (Model.Contributions.Count > 0)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="text-indigo-500">✨</span>
+                        High-Impact Contributions
+                        <span class="ml-auto text-sm font-normal text-slate-400">@Model.Contributions.Count</span>
+                    </h2>
+                    <div class="space-y-4">
+                        @foreach (var contrib in Model.Contributions)
+                        {
+                            <div class="border-l-2 border-indigo-200 pl-4 pb-1">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="flex-1">
+                                        @if (!string.IsNullOrEmpty(contrib.Url))
+                                        {
+                                            <a href="@contrib.Url" target="_blank" rel="noopener noreferrer"
+                                               class="font-medium text-slate-800 hover:text-indigo-700 transition-colors text-sm">
+                                                @contrib.Title
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="font-medium text-slate-800 text-sm">@contrib.Title</span>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(contrib.Description))
+                                        {
+                                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">@contrib.Description</p>
+                                        }
+                                    </div>
+                                    <div class="flex-shrink-0 text-right">
+                                        @if (!string.IsNullOrEmpty(contrib.Type))
+                                        {
+                                            <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">@contrib.Type</span>
+                                        }
+                                        @if (contrib.Date.HasValue)
+                                        {
+                                            <div class="text-xs text-slate-400 mt-1">@contrib.Date.Value.ToString("MMM yyyy")</div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* Events *@
+            @if (Model.Events.Count > 0)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="text-indigo-500">📅</span>
+                        Events
+                        <span class="ml-auto text-sm font-normal text-slate-400">@Model.Events.Count</span>
+                    </h2>
+                    <div class="space-y-3">
+                        @foreach (var ev in Model.Events)
+                        {
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-lg">📍</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    @if (!string.IsNullOrEmpty(ev.Url))
+                                    {
+                                        <a href="@ev.Url" target="_blank" rel="noopener noreferrer" class="font-medium text-sm text-slate-800 hover:text-indigo-700 transition-colors">@ev.Title</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="font-medium text-sm text-slate-800">@ev.Title</span>
+                                    }
+                                    <div class="flex flex-wrap gap-2 mt-1 text-xs text-slate-400">
+                                        @if (ev.Date.HasValue) { <span>@ev.Date.Value.ToString("MMMM d, yyyy")</span> }
+                                        @if (!string.IsNullOrEmpty(ev.Location)) { <span>• @ev.Location</span> }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* Right column: Info panels *@
+        <div class="space-y-4">
+
+            @* Social networks *@
+            @if (Model.SocialNetworks.Count > 0)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Connect</h2>
+                    <div class="flex flex-col gap-2">
+                        @foreach (var social in Model.SocialNetworks)
+                        {
+                            <a href="@social.Url" target="_blank" rel="noopener noreferrer"
+                               class="flex items-center gap-2.5 px-3 py-2 rounded-xl @MvpProfile.SocialNetworkClasses(social.Network) text-sm font-medium transition-colors">
+                                <span class="w-5 text-center text-xs font-bold uppercase">@MvpProfile.SocialNetworkIcon(social.Network)</span>
+                                <span class="truncate">@social.Network</span>
+                                <svg class="w-3 h-3 ml-auto opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* Technology Focus *@
+            @if (Model.TechnologyFocusArea.Count > 0)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Technology Focus</h2>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach (var tech in Model.TechnologyFocusArea)
+                        {
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">@tech</span>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* Functional Roles *@
+            @if (Model.FunctionalRoles.Count > 0)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Functional Roles</h2>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach (var role in Model.FunctionalRoles)
+                        {
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">@role</span>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* Languages *@
+            @if (Model.Languages.Count > 0)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Languages</h2>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach (var lang in Model.Languages)
+                        {
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-violet-50 text-violet-700 border border-violet-100">
+                                🌐 @lang
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* Quick stats *@
+            <div class="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-2xl border border-indigo-100 p-5">
+                <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Stats</h2>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Contributions</span>
+                        <span class="font-semibold text-slate-700">@Model.Contributions.Count</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Events</span>
+                        <span class="font-semibold text-slate-700">@Model.Events.Count</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Social profiles</span>
+                        <span class="font-semibold text-slate-700">@Model.SocialNetworks.Count</span>
+                    </div>
+                    @if (Model.YearsInProgram.HasValue)
+                    {
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Years as MVP</span>
+                            <span class="font-semibold text-slate-700">@Model.YearsInProgram</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
