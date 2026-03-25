@@ -30,6 +30,7 @@
         [x-cloak] { display: none !important; }
     </style>
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col text-slate-800">
 
@@ -37,7 +38,12 @@
     <nav class="bg-gradient-to-r from-indigo-950 via-indigo-900 to-violet-900 text-white shadow-xl sticky top-0 z-50">
         <div class="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <a asp-controller="Mvp" asp-action="Index" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center text-xl group-hover:bg-white/25 transition-colors">🏆</div>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="36" height="36">
+                        <path d="M16 27 C14 25 4 19 4 12 C4 7.6 7.2 5 11 5 C13.2 5 15 6.2 16 8 C17 6.2 18.8 5 21 5 C24.8 5 28 7.6 28 12 C28 19 18 25 16 27 Z" fill="#dc2626"/>
+                        <text x="16" y="14" text-anchor="middle" dominant-baseline="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold" font-size="8">MVP</text>
+                    </svg>
+                </div>
                 <div>
                     <div class="font-bold text-base leading-tight tracking-tight">MVP Love</div>
                     <div class="text-xs text-indigo-300 leading-tight">Microsoft MVP Browser</div>
