@@ -68,6 +68,7 @@ public class MvpController : Controller
             Sort             = sort,
             Results          = results,
             TotalResults     = total,
+            TotalMvps        = _svc.TotalCount,
             Page             = page,
             PageSize         = 24,
         };

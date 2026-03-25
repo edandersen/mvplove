@@ -143,3 +143,22 @@ else
         <p class="text-center text-xs text-slate-400 mt-1">Page @Model.Page of @Model.TotalPages · @Model.TotalResults total</p>
     }
 }
+
+@* Out-of-band updates for count displays outside #mvp-results *@
+@if (Context.Request.Headers.ContainsKey("HX-Request"))
+{
+    <p id="hero-stats" hx-swap-oob="true" class="text-indigo-300 text-sm mt-1">
+        @Model.TotalMvps profiles loaded · @Model.TotalResults shown
+        @if (Model.HasFilters)
+        {
+            <span class="ml-2 inline-flex items-center gap-1 bg-indigo-700/60 text-indigo-200 px-2 py-0.5 rounded-full text-xs">Filtered</span>
+        }
+    </p>
+    <p id="sort-bar-count" hx-swap-oob="true" class="text-sm text-slate-500">
+        <span class="font-semibold text-slate-700">@Model.TotalResults</span> result@(Model.TotalResults != 1 ? "s" : "")
+        @if (!string.IsNullOrWhiteSpace(Model.Query))
+        {
+            <span> for "<em>@Model.Query</em>"</span>
+        }
+    </p>
+}

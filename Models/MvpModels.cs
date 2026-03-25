@@ -127,6 +127,7 @@ public class MvpGridViewModel
 {
     public List<MvpProfile> Results { get; set; } = [];
     public int TotalResults { get; set; }
+    public int TotalMvps { get; set; }
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 24;
     public int TotalPages => (int)Math.Ceiling((double)TotalResults / PageSize);
@@ -135,4 +136,6 @@ public class MvpGridViewModel
     public List<string> SelectedCountries { get; set; } = [];
     public List<string> SelectedTech { get; set; } = [];
     public string? Sort { get; set; }
+    public bool HasFilters => !string.IsNullOrWhiteSpace(Query)
+        || SelectedAwards.Count > 0 || SelectedCountries.Count > 0 || SelectedTech.Count > 0;
 }

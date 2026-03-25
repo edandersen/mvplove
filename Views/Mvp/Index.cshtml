@@ -7,7 +7,7 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">Browse Microsoft MVPs</h1>
-                <p class="text-indigo-300 text-sm mt-1">
+                <p id="hero-stats" class="text-indigo-300 text-sm mt-1">
                     @Model.TotalMvps profiles loaded · @Model.TotalResults shown
                     @if (Model.HasFilters)
                     {
@@ -133,7 +133,7 @@
     <div class="flex-1 min-w-0">
         @* Sort bar *@
         <div class="flex items-center justify-between mb-4 gap-4">
-            <p class="text-sm text-slate-500">
+            <p id="sort-bar-count" class="text-sm text-slate-500">
                 <span class="font-semibold text-slate-700">@Model.TotalResults</span> result@(Model.TotalResults != 1 ? "s" : "")
                 @if (!string.IsNullOrWhiteSpace(Model.Query))
                 {
