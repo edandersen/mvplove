@@ -14,6 +14,25 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Block requests that didn't come through the Cloudflare CDN.
+// Set CloudflareOriginSecret in Azure App Service → Configuration → App Settings.
+// Leave empty in development to skip the check.
+var cfSecret = app.Configuration["CloudflareOriginSecret"];
+if (!string.IsNullOrWhiteSpace(cfSecret))
+{
+    app.Use(async (context, next) =>
+    {
+        if (!context.Request.Headers.TryGetValue("Secret", out var value) || value != cfSecret)
+        {
+            context.Response.StatusCode = 403;
+            await context.Response.WriteAsync("Forbidden");
+            return;
+        }
+        await next(context);
+    });
+}
+
 app.UseRouting();
 app.UseAuthorization();
 app.MapStaticAssets();
