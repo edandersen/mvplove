@@ -8,10 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="getmvps/**/*.cs" />
-    <!-- Include mvps.json in publish output so MvpDataService can find it at runtime -->
-    <Content Include="getmvps/mvps.json" Condition="Exists('getmvps/mvps.json')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
