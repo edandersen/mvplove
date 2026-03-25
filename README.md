@@ -2,6 +2,8 @@
 
 A beautiful Microsoft MVP profile browser built with **ASP.NET Core 10 MVC**, **HTMX**, and **Tailwind CSS**.
 
+View live at [https://www.mvplove.com](https://www.mvplove.com)!
+
 ## What is this?
 
 MVP Love lets you browse, search, and filter all [Microsoft Most Valuable Professional (MVP)](https://mvp.microsoft.com) profiles. It's a server-side rendered web app with live interactive filtering powered by HTMX — no JavaScript framework required.
