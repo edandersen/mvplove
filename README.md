@@ -4,6 +4,8 @@ A beautiful Microsoft MVP profile browser built with **ASP.NET Core 10 MVC**, **
 
 View live at [https://www.mvplove.com](https://www.mvplove.com)!
 
+Basically entirely vibe coded with Github Copilot CLI.
+
 ## What is this?
 
 MVP Love lets you browse, search, and filter all [Microsoft Most Valuable Professional (MVP)](https://mvp.microsoft.com) profiles. It's a server-side rendered web app with live interactive filtering powered by HTMX — no JavaScript framework required.
