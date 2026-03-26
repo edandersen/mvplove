@@ -123,6 +123,14 @@ public class MvpBrowseViewModel
         || SelectedAwards.Count > 0 || SelectedCountries.Count > 0 || SelectedTech.Count > 0;
 }
 
+public class HomeDashboardViewModel
+{
+    public List<MvpProfile> LongestTenured { get; set; } = [];
+    public List<MvpProfile> MostLanguages { get; set; } = [];
+    public List<MvpProfile> NewMvps { get; set; } = [];
+    public int TotalCount { get; set; }
+}
+
 public class MvpGridViewModel
 {
     public List<MvpProfile> Results { get; set; } = [];

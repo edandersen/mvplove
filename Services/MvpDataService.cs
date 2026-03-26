@@ -104,7 +104,7 @@ public class MvpDataService
         return q.Where(p => !string.IsNullOrEmpty(p.Country))
             .GroupBy(p => p.Country)
             .Select(g => new FilterOption { Value = g.Key, Count = g.Count() })
-            .OrderByDescending(f => f.Count).ThenBy(f => f.Value)
+            .OrderBy(f => f.Value)
             .ToList();
     }
 
@@ -119,4 +119,27 @@ public class MvpDataService
             .OrderByDescending(f => f.Count).ThenBy(f => f.Value)
             .ToList();
     }
+
+    public List<MvpProfile> GetTopTenured(int count = 10)
+        => _profiles
+            .Where(p => p.YearsInProgram.HasValue)
+            .OrderByDescending(p => p.YearsInProgram)
+            .ThenBy(p => p.Name)
+            .Take(count)
+            .ToList();
+
+    public List<MvpProfile> GetTopPolyglots(int count = 10)
+        => _profiles
+            .Where(p => p.Languages.Count > 0)
+            .OrderByDescending(p => p.Languages.Count)
+            .ThenBy(p => p.Name)
+            .Take(count)
+            .ToList();
+
+    public List<MvpProfile> GetRandomNewMvps(int count = 10)
+        => _profiles
+            .Where(p => p.YearsInProgram == 1)
+            .OrderBy(_ => Random.Shared.Next())
+            .Take(count)
+            .ToList();
 }
