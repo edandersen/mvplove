@@ -10,4 +10,9 @@
     <Compile Remove="getmvps/**/*.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Azure.AI.Projects" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>
