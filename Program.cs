@@ -1,8 +1,6 @@
 using System.ClientModel;
 using System.ComponentModel;
-using Azure.AI.Projects;
-using Azure.AI.Projects.Agents;
-using Azure.AI.Projects.Evaluation;
+using System.Text.Json.Serialization;
 using Azure.Identity;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
@@ -17,15 +15,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<MvpDataService>();
 
+builder.Services.AddAGUI();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
+
 
 // Block requests that didn't come through the Cloudflare CDN.
 // Set CloudflareOriginSecret in Azure App Service → Configuration → App Settings.
@@ -45,33 +46,46 @@ if (!string.IsNullOrWhiteSpace(cfSecret))
     });
 }
 
-app.UseRouting();
-app.UseAuthorization();
-app.MapStaticAssets();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
 
 // create the MVP Copilot agent
 if (!string.IsNullOrWhiteSpace("OpenAIApiKey"))
 {
+
+
+
     var endpoint = app.Configuration["OpenAIEndpoint"];
     var deploymentName = app.Configuration["OpenAIModelName"] ?? "gpt-4o-mini";
     var apiKey = app.Configuration["OpenAIApiKey"];
 
 OpenAIClient client = new OpenAIClient(apiKey);
 #pragma warning disable OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-    var chatClient = client.GetResponsesClient();
+    var chatClient = client.GetChatClient(deploymentName);
 #pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-    AIAgent agent = chatClient
-    .AsAIAgent(model: deploymentName,
-        instructions: "You are a helpful assistant.", name: "MVP Copilot");
+
+#pragma warning disable OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+    // var agent2 = chatClient.AsIChatClient().AsAIAgent(
+    //         name: "AgenticChat",
+    //         description: "A simple chat agent using Azure OpenAI");
+#pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
+    var agent = chatClient.AsIChatClient()
+    .AsAIAgent(
+        instructions: "You are a helpful assistant.", name: "agentic_chat");
         //tools: [AIFunctionFactory.Create(GetWeather)]);
 
-    app.MapAGUI("/copilot", agent);
+    app.MapAGUI("/mvpcopilot", agent);
 }
+
+app.UseRouting();
+app.UseAuthorization();
+app.MapStaticAssets();
+
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
 
 app.Run();
