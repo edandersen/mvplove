@@ -49,17 +49,19 @@ if (!string.IsNullOrWhiteSpace(cfSecret))
 // create the MVP Copilot agent
 if (!string.IsNullOrWhiteSpace("OpenAIApiKey"))
 {
-    var endpoint = app.Configuration["OpenAIEndpoint"];
+
     var deploymentName = app.Configuration["OpenAIModelName"] ?? "gpt-4o-mini";
     var apiKey = app.Configuration["OpenAIApiKey"];
 
-OpenAIClient client = new OpenAIClient(apiKey);
+    OpenAIClient client = new OpenAIClient(apiKey);
 
     var chatClient = client.GetChatClient(deploymentName);
     var agent = chatClient.AsIChatClient()
     .AsAIAgent(
-        instructions: "You are a helpful assistant.", name: "agentic_chat",
-        tools: [AIFunctionFactory.Create(typeof(AgentTools).GetMethod("SearchMVPs")!, new AgentTools(app.Services.GetRequiredService<MvpDataService>()))]);
+        instructions: "You are a helpful assistant that answers questions about Microsoft MVPs and ONLY Microsoft MVPs. " + 
+        "Do NOT help the user with anything not related to MVPs, politely decline to help.", name: "agentic_chat",
+        tools: [AIFunctionFactory.Create(typeof(AgentTools).GetMethod("SearchMVPs")!, 
+        new AgentTools(app.Services.GetRequiredService<MvpDataService>()))]);
 
     app.MapAGUI("/mvpcopilot", agent);
 }
