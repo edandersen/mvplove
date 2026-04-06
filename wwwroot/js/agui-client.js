@@ -16,6 +16,14 @@
   // ── DOM refs (set in init) ─────────────────────────────────────────
   let chatMessages, chatInput, sendBtn, chatForm;
 
+  // ── Markdown rendering ──────────────────────────────────────────────
+  function renderMarkdown(text) {
+    if (typeof marked !== 'undefined') {
+      return marked.parse(text, { breaks: true });
+    }
+    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────
   function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -36,8 +44,12 @@
     const bubble = document.createElement('div');
     bubble.className = role === 'user'
       ? 'max-w-[75%] rounded-2xl px-4 py-2 bg-blue-600 text-white text-sm whitespace-pre-wrap'
-      : 'max-w-[75%] rounded-2xl px-4 py-2 bg-slate-200 text-slate-800 text-sm whitespace-pre-wrap';
-    bubble.textContent = text;
+      : 'max-w-[75%] rounded-2xl px-4 py-2 bg-slate-200 text-slate-800 text-sm prose-chat';
+    if (role === 'assistant') {
+      bubble.innerHTML = renderMarkdown(text);
+    } else {
+      bubble.textContent = text;
+    }
 
     wrapper.appendChild(bubble);
     chatMessages.appendChild(wrapper);
@@ -52,7 +64,7 @@
       wrapper.className = 'flex justify-start';
       bubble = document.createElement('div');
       bubble.id = 'msg-' + messageId;
-      bubble.className = 'max-w-[75%] rounded-2xl px-4 py-2 bg-slate-200 text-slate-800 text-sm whitespace-pre-wrap';
+      bubble.className = 'max-w-[75%] rounded-2xl px-4 py-2 bg-slate-200 text-slate-800 text-sm prose-chat';
       wrapper.appendChild(bubble);
       chatMessages.appendChild(wrapper);
     }
@@ -100,13 +112,15 @@
       case 'TEXT_MESSAGE_CONTENT': {
         currentAssistantText += d.delta;
         const bubble = getOrCreateAssistantBubble(d.messageId);
-        bubble.textContent = currentAssistantText;
+        bubble.innerHTML = renderMarkdown(currentAssistantText);
         scrollToBottom();
         break;
       }
 
       case 'TEXT_MESSAGE_END':
         if (currentMessageId) {
+          const bubble = getOrCreateAssistantBubble(currentMessageId);
+          bubble.innerHTML = renderMarkdown(currentAssistantText);
           messages.push({
             id: currentMessageId,
             role: 'assistant',

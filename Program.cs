@@ -26,8 +26,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-
-
 // Block requests that didn't come through the Cloudflare CDN.
 // Set CloudflareOriginSecret in Azure App Service → Configuration → App Settings.
 // Leave empty in development to skip the check.
@@ -51,29 +49,17 @@ if (!string.IsNullOrWhiteSpace(cfSecret))
 // create the MVP Copilot agent
 if (!string.IsNullOrWhiteSpace("OpenAIApiKey"))
 {
-
-
-
     var endpoint = app.Configuration["OpenAIEndpoint"];
     var deploymentName = app.Configuration["OpenAIModelName"] ?? "gpt-4o-mini";
     var apiKey = app.Configuration["OpenAIApiKey"];
 
 OpenAIClient client = new OpenAIClient(apiKey);
-#pragma warning disable OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
     var chatClient = client.GetChatClient(deploymentName);
-#pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-
-
-#pragma warning disable OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-    // var agent2 = chatClient.AsIChatClient().AsAIAgent(
-    //         name: "AgenticChat",
-    //         description: "A simple chat agent using Azure OpenAI");
-#pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-
     var agent = chatClient.AsIChatClient()
     .AsAIAgent(
-        instructions: "You are a helpful assistant.", name: "agentic_chat");
-        //tools: [AIFunctionFactory.Create(GetWeather)]);
+        instructions: "You are a helpful assistant.", name: "agentic_chat",
+        tools: [AIFunctionFactory.Create(typeof(AgentTools).GetMethod("SearchMVPs")!, new AgentTools(app.Services.GetRequiredService<MvpDataService>()))]);
 
     app.MapAGUI("/mvpcopilot", agent);
 }
