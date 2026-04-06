@@ -1,4 +1,15 @@
+using System.ClientModel;
+using System.ComponentModel;
+using Azure.AI.Projects;
+using Azure.AI.Projects.Agents;
+using Azure.AI.Projects.Evaluation;
+using Azure.Identity;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using mvcmcpmvp.Services;
+using OpenAI;
+using OpenAI.Chat;
+using OpenAI.Responses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,5 +52,26 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+// create the MVP Copilot agent
+if (!string.IsNullOrWhiteSpace("OpenAIApiKey"))
+{
+    var endpoint = app.Configuration["OpenAIEndpoint"];
+    var deploymentName = app.Configuration["OpenAIModelName"] ?? "gpt-4o-mini";
+    var apiKey = app.Configuration["OpenAIApiKey"];
+
+OpenAIClient client = new OpenAIClient(apiKey);
+#pragma warning disable OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+    var chatClient = client.GetResponsesClient();
+#pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
+    AIAgent agent = chatClient
+    .AsAIAgent(model: deploymentName,
+        instructions: "You are a helpful assistant.", name: "MVP Copilot");
+        //tools: [AIFunctionFactory.Create(GetWeather)]);
+
+    Console.WriteLine(await agent.RunAsync("What is the largest city in France?"));
+
+}
 
 app.Run();
