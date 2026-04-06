@@ -47,7 +47,7 @@ if (!string.IsNullOrWhiteSpace(cfSecret))
 
 
 // create the MVP Copilot agent
-if (!string.IsNullOrWhiteSpace("OpenAIApiKey"))
+if (!string.IsNullOrWhiteSpace(app.Configuration["OpenAIApiKey"]))
 {
 
     var deploymentName = app.Configuration["OpenAIModelName"] ?? "gpt-4o-mini";
