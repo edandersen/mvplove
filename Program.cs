@@ -5,6 +5,7 @@ using Azure.AI.Projects.Agents;
 using Azure.AI.Projects.Evaluation;
 using Azure.Identity;
 using Microsoft.Agents.AI;
+using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
 using Microsoft.Extensions.AI;
 using mvcmcpmvp.Services;
 using OpenAI;
@@ -70,8 +71,7 @@ OpenAIClient client = new OpenAIClient(apiKey);
         instructions: "You are a helpful assistant.", name: "MVP Copilot");
         //tools: [AIFunctionFactory.Create(GetWeather)]);
 
-    Console.WriteLine(await agent.RunAsync("What is the largest city in France?"));
-
+    app.MapAGUI("/copilot", agent);
 }
 
 app.Run();
