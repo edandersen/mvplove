@@ -36,7 +36,6 @@ MVP Love lets you browse, search, and filter all [Microsoft Most Valuable Profes
 ### Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- (Optional) Node.js — only needed to re-fetch MVP data
 
 ### Run the app
 
@@ -96,6 +95,5 @@ User types in search box
 ## Roadmap
 
 - [ ] **MCP Server** — expose MVP data via Model Context Protocol for AI agents
-- [ ] Full MVP dataset (currently loaded from local JSON)
 - [ ] Country flag emojis
 - [ ] Dark mode
