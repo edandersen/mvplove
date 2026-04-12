@@ -22,13 +22,14 @@ jobs:
       # Fetch all MVP profiles and write getmvps/mvps.json
       # This calls the Microsoft MVP API — may take 10–20 minutes for ~4,000 profiles
       - name: Fetch MVP data
-        working-directory: ./getmvps
+        working-directory: ./src/getmvps
         run: dotnet run getmvps.cs
 
       - name: Restore dependencies
         run: dotnet restore
 
       - name: Build and publish
+        working-directory: ./src
         run: dotnet publish mvcmcpmvp.csproj -c Release -o ./publish
 
       - name: Deploy to Azure App Service
