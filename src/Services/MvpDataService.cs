@@ -34,6 +34,20 @@ public class MvpDataService
             .Distinct().OrderBy(t => t).ToList().AsReadOnly();
     }
 
+    internal MvpDataService(IEnumerable<MvpProfile> profiles)
+    {
+        _profiles = profiles.ToList();
+        Countries = _profiles
+            .Select(p => p.Country).Where(c => !string.IsNullOrEmpty(c))
+            .Distinct().OrderBy(c => c).ToList().AsReadOnly();
+        AwardCategories = _profiles
+            .SelectMany(p => p.AwardCategory)
+            .Distinct().OrderBy(a => a).ToList().AsReadOnly();
+        TechFocusAreas = _profiles
+            .SelectMany(p => p.TechnologyFocusArea)
+            .Distinct().OrderBy(t => t).ToList().AsReadOnly();
+    }
+
     public MvpProfile? GetById(string id)
         => _profiles.FirstOrDefault(p => p.Id == id);
 
@@ -75,6 +89,8 @@ public class MvpDataService
             "years_desc" => q.OrderByDescending(p => p.YearsInProgram ?? 0).ThenBy(p => p.Name),
             "years_asc"  => q.OrderBy(p => p.YearsInProgram ?? 0).ThenBy(p => p.Name),
             "country"    => q.OrderBy(p => p.Country).ThenBy(p => p.Name),
+            "langs_desc" => q.OrderByDescending(p => p.Languages.Count).ThenBy(p => p.Name),
+            "langs_asc"  => q.OrderBy(p => p.Languages.Count).ThenBy(p => p.Name),
             _            => q.OrderBy(p => p.Name)
         };
 

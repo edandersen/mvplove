@@ -19,3 +19,11 @@
 ## Learnings
 
 Initial setup complete.
+
+### 2026 — Languages sort & display (barry-langs-sort)
+- Added `langs_desc` and `langs_asc` sort cases to `MvpDataService.Search` switch expression, ordering by `Languages.Count`.
+- Added an `internal MvpDataService(IEnumerable<MvpProfile>)` constructor for test injection.
+- Added `InternalsVisibleTo` for `MvcMcpMvpTests` via `AssemblyAttribute` ItemGroup in `mvcmcpmvp.csproj`.
+- Added language count chip to `Views/Mvp/_Grid.cshtml` tile footer (SVG globe icon, shows "N lang/langs").
+- Added "Most languages spoken" and "Fewest languages spoken" options to the sort `<select>` in `Views/Mvp/Index.cshtml`.
+- Build passes with only a pre-existing NU1510 warning (unrelated to these changes).
