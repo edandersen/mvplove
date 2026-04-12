@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "agents": [
+    {
+      "persistent_name": "Gary",
+      "role": "Lead",
+      "universe": "user-defined",
+      "created_at": "2026-04-12T09:30:00Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Barry",
+      "role": "Full-Stack Dev",
+      "universe": "user-defined",
+      "created_at": "2026-04-12T09:30:00Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Nick",
+      "role": "Tester",
+      "universe": "user-defined",
+      "created_at": "2026-04-12T09:30:00Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Scribe",
+      "role": "Session Logger",
+      "universe": "exempt",
+      "created_at": "2026-04-12T09:30:00Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Ralph",
+      "role": "Work Monitor",
+      "universe": "exempt",
+      "created_at": "2026-04-12T09:30:00Z",
+      "legacy_named": false,
+      "status": "active"
+    }
+  ]
+}

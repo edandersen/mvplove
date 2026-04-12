@@ -1,0 +1,11 @@
+{
+  "assignments": [
+    {
+      "assignment_id": "mvcmcpmvp-2026-04-12",
+      "project": "mvcmcpmvp",
+      "universe": "user-defined",
+      "created_at": "2026-04-12T09:30:00Z",
+      "agents": ["Gary", "Barry", "Nick", "Scribe", "Ralph"]
+    }
+  ]
+}
