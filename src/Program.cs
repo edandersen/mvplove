@@ -1,6 +1,7 @@
 using System.ClientModel;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using AspNetCoreMcpServer.Tools;
 using Azure.Identity;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
@@ -16,6 +17,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<MvpDataService>();
 
 builder.Services.AddAGUI();
+
+builder.Services.AddMcpServer()
+.WithHttpTransport()
+.WithTools<MvpMcpTool>();
 
 var app = builder.Build();
 
@@ -43,8 +48,6 @@ if (!string.IsNullOrWhiteSpace(cfSecret))
         await next(context);
     });
 }
-
-
 
 // create the MVP Copilot agent
 if (!string.IsNullOrWhiteSpace(app.Configuration["OpenAIApiKey"]))
@@ -75,5 +78,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+app.MapMcp("/mcp");
 
 app.Run();
