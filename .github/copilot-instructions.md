@@ -10,7 +10,9 @@ dotnet build          # build only
 dotnet publish mvcmcpmvp.csproj -c Release -o ./publish
 ```
 
-There are no tests.
+Tests are in tests/MvcMcpMvpTests.cs.
+
+The development environment is Windows, so its better to use Powershell commands to search for and list files rather than rg.
 
 ### Refresh MVP data
 
