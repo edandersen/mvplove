@@ -23,10 +23,16 @@ public class HomeController : Controller
         return View(vm);
     }
 
-    public IActionResult Privacy()
+    public IActionResult Random()
     {
-        return View();
-    }
+         var randomId = _svc.GetRandomId();
+         return RedirectToAction("Detail", "Mvp", new { id = randomId });
+     }
+
+     public IActionResult Privacy()
+     {
+         return View();
+     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

@@ -158,4 +158,10 @@ public class MvpDataService
             .OrderBy(_ => Random.Shared.Next())
             .Take(count)
             .ToList();
+
+     public string GetRandomId()
+     {
+         if (_profiles.Count == 0) throw new InvalidOperationException("No MVP profiles available");
+         return _profiles[Random.Shared.Next(_profiles.Count)].Id;
+     }
 }
