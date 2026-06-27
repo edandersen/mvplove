@@ -282,4 +282,238 @@ public class MvpDataServiceTests
         var result = svc.GetTopPolyglots(2);
         Assert.Equal(2, result.Count);
     }
+
+    // --- GetTopTenured ---
+
+    [Fact]
+    public void GetTopTenured_ReturnsSortedByYearsDescending()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", years: 3),
+            MakeProfile("2", "Bob", years: 10),
+            MakeProfile("3", "Charlie", years: 5));
+        var result = svc.GetTopTenured(10);
+        Assert.Equal(new[] { "Bob", "Charlie", "Alice" }, result.Select(r => r.Name).ToArray());
+    }
+
+    [Fact]
+    public void GetTopTenured_ExcludesProfilesWithNoYears()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", years: 5),
+            MakeProfile("2", "Bob", years: null));
+        var result = svc.GetTopTenured(10);
+        Assert.Single(result);
+        Assert.Equal("Alice", result[0].Name);
+    }
+
+    [Fact]
+    public void GetTopTenured_RespectsCountParameter()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", years: 1),
+            MakeProfile("2", "Bob", years: 2),
+            MakeProfile("3", "Charlie", years: 3));
+        var result = svc.GetTopTenured(2);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("Charlie", result[0].Name);
+        Assert.Equal("Bob", result[1].Name);
+    }
+
+    [Fact]
+    public void GetTopTenured_TiesBreakByName()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Zara", years: 5),
+            MakeProfile("2", "Alice", years: 5));
+        var result = svc.GetTopTenured(10);
+        Assert.Equal(new[] { "Alice", "Zara" }, result.Select(r => r.Name).ToArray());
+    }
+
+    // --- GetRandomNewMvps ---
+
+    [Fact]
+    public void GetRandomNewMvps_ReturnsOnlyNewMvps()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", years: 1),
+            MakeProfile("2", "Bob", years: 3),
+            MakeProfile("3", "Charlie", years: 1));
+        var result = svc.GetRandomNewMvps(10);
+        Assert.All(result, r => Assert.Equal(1, r.YearsInProgram));
+        Assert.Equal(2, result.Count);
+    }
+
+    [Fact]
+    public void GetRandomNewMvps_RespectsCountParameter()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", years: 1),
+            MakeProfile("2", "Bob", years: 1),
+            MakeProfile("3", "Charlie", years: 1));
+        var result = svc.GetRandomNewMvps(2);
+        Assert.Equal(2, result.Count);
+    }
+
+    // --- GetAwardOptions ---
+
+    [Fact]
+    public void GetAwardOptions_ReturnsAllAwardsWithCounts()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", awards: ["Azure", "Developer"]),
+            MakeProfile("2", "Bob", awards: ["Azure"]),
+            MakeProfile("3", "Charlie", awards: ["Developer", "Microsoft AI"]));
+        var result = svc.GetAwardOptions();
+        Assert.Equal(3, result.Count);
+        Assert.Equal("Azure", result[0].Value);
+        Assert.Equal(2, result[0].Count);
+    }
+
+    [Fact]
+    public void GetAwardOptions_FilteredByCountries()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", awards: ["Azure"], country: "US"),
+            MakeProfile("2", "Bob", awards: ["Developer"], country: "UK"),
+            MakeProfile("3", "Charlie", awards: ["Microsoft AI"], country: "US"));
+        var result = svc.GetAwardOptions(countries: ["US"]);
+        Assert.Equal(2, result.Count);
+        Assert.All(result, r => Assert.NotEqual("Developer", r.Value));
+    }
+
+    [Fact]
+    public void GetAwardOptions_FilteredByTech()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", awards: ["Azure"], tech: ["Azure"]),
+            MakeProfile("2", "Bob", awards: ["Developer"], tech: ["GitHub"]),
+            MakeProfile("3", "Charlie", awards: ["Microsoft AI"], tech: ["Azure"]));
+        var result = svc.GetAwardOptions(tech: ["Azure"]);
+        Assert.All(result, r => Assert.NotEqual("Developer", r.Value));
+    }
+
+    // --- GetCountryOptions ---
+
+    [Fact]
+    public void GetCountryOptions_ReturnsAllCountriesWithCounts()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", country: "US"),
+            MakeProfile("2", "Bob", country: "UK"),
+            MakeProfile("3", "Charlie", country: "US"));
+        var result = svc.GetCountryOptions();
+        Assert.Equal(2, result.Count);
+        var us = result.First(r => r.Value == "US");
+        Assert.Equal(2, us.Count);
+    }
+
+    [Fact]
+    public void GetCountryOptions_FilteredByAwards()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", country: "US", awards: ["Azure"]),
+            MakeProfile("2", "Bob", country: "UK", awards: ["Developer"]),
+            MakeProfile("3", "Charlie", country: "CA", awards: ["Azure"]));
+        var result = svc.GetCountryOptions(awards: ["Azure"]);
+        Assert.All(result, r => Assert.NotEqual("UK", r.Value));
+    }
+
+    [Fact]
+    public void GetCountryOptions_FilteredByTech()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", country: "US", tech: ["Azure"]),
+            MakeProfile("2", "Bob", country: "UK", tech: ["GitHub"]),
+            MakeProfile("3", "Charlie", country: "CA", tech: ["Azure"]));
+        var result = svc.GetCountryOptions(tech: ["Azure"]);
+        Assert.All(result, r => Assert.NotEqual("UK", r.Value));
+    }
+
+    [Fact]
+    public void GetCountryOptions_ExcludesEmptyCountries()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", country: ""),
+            MakeProfile("2", "Bob", country: "US"));
+        var result = svc.GetCountryOptions();
+        Assert.Single(result);
+        Assert.Equal("US", result[0].Value);
+    }
+
+    // --- GetTechOptions ---
+
+    [Fact]
+    public void GetTechOptions_ReturnsAllTechWithCounts()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", tech: ["Azure", "GitHub"]),
+            MakeProfile("2", "Bob", tech: ["GitHub"]),
+            MakeProfile("3", "Charlie", tech: ["AI"]));
+        var result = svc.GetTechOptions();
+        Assert.Equal(3, result.Count);
+    }
+
+    [Fact]
+    public void GetTechOptions_FilteredByAwards()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", tech: ["Azure"], awards: ["Azure"]),
+            MakeProfile("2", "Bob", tech: ["GitHub"], awards: ["Developer"]),
+            MakeProfile("3", "Charlie", tech: ["AI"], awards: ["Azure"]));
+        var result = svc.GetTechOptions(awards: ["Azure"]);
+        Assert.All(result, r => Assert.NotEqual("GitHub", r.Value));
+    }
+
+    [Fact]
+    public void GetTechOptions_FilteredByCountries()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", tech: ["Azure"], country: "US"),
+            MakeProfile("2", "Bob", tech: ["GitHub"], country: "UK"),
+            MakeProfile("3", "Charlie", tech: ["AI"], country: "US"));
+        var result = svc.GetTechOptions(countries: ["US"]);
+        Assert.All(result, r => Assert.NotEqual("GitHub", r.Value));
+    }
+
+    // --- Collection Properties ---
+
+    [Fact]
+    public void Countries_ReturnsDistinctSortedCountries()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", country: "US"),
+            MakeProfile("2", "Bob", country: "UK"),
+            MakeProfile("3", "Charlie", country: "AU"),
+            MakeProfile("4", "Dave", country: "US"));
+        Assert.Equal(new[] { "AU", "UK", "US" }, svc.Countries.ToArray());
+    }
+
+    [Fact]
+    public void Countries_ExcludesEmptyCountries()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", country: ""),
+            MakeProfile("2", "Bob", country: "US"));
+        Assert.Single(svc.Countries);
+        Assert.Equal("US", svc.Countries[0]);
+    }
+
+    [Fact]
+    public void AwardCategories_ReturnsDistinctSorted()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", awards: ["Azure", "Developer"]),
+            MakeProfile("2", "Bob", awards: ["Developer", "Microsoft AI"]));
+        Assert.Equal(new[] { "Azure", "Developer", "Microsoft AI" }, svc.AwardCategories.ToArray());
+    }
+
+    [Fact]
+    public void TechFocusAreas_ReturnsDistinctSorted()
+    {
+        var svc = CreateService(
+            MakeProfile("1", "Alice", tech: ["Azure", "GitHub"]),
+            MakeProfile("2", "Bob", tech: ["GitHub", "AI"]));
+        Assert.Equal(new[] { "AI", "Azure", "GitHub" }, svc.TechFocusAreas.ToArray());
+    }
 }
