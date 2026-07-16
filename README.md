@@ -4,7 +4,7 @@ A beautiful Microsoft MVP profile browser built with **ASP.NET Core 10 MVC**, **
 
 View live at [https://www.mvplove.com](https://www.mvplove.com)!
 
-Basically entirely vibe coded with Github Copilot CLI as an experiment.
+Basically entirely vibe coded with Github Copilot CLI as an experiment!
 
 ## What is this?
 
