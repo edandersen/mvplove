@@ -16,6 +16,7 @@ const string BaseApi = "https://mavenapi-prod.microsoft.com/api";
 const string SearchUrl = $"{BaseApi}/CommunityLeaders/search/";
 const int PageSize = 100;
 const int MaxConcurrency = 5;
+string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "mvps.json");
 
 var camelCaseSettings = new JsonSerializerSettings
 {
@@ -27,10 +28,43 @@ http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win6
 http.DefaultRequestHeaders.Add("Origin", "https://mvp.microsoft.com");
 http.DefaultRequestHeaders.Add("Referer", "https://mvp.microsoft.com/");
 
-// --- Step 1: Collect profile stubs via search ---
+// --- Step 1: Compare the server count with the cached data ---
+var countPayload = new SearchRequest { PageIndex = 1, PageSize = 1 };
+var countRequestJson = JsonConvert.SerializeObject(countPayload, camelCaseSettings);
+var countContent = new StringContent(countRequestJson, Encoding.UTF8, "application/json");
+var countResponse = await http.PostAsync(SearchUrl, countContent);
+countResponse.EnsureSuccessStatusCode();
+
+var countResult = JsonConvert.DeserializeObject<SearchResponse>(
+    await countResponse.Content.ReadAsStringAsync())
+    ?? throw new InvalidOperationException("The MVP search API returned an invalid response.");
+
+int totalAvailable = countResult.FilteredCount;
+int targetCount = maxCount.HasValue ? Math.Min(maxCount.Value, totalAvailable) : totalAvailable;
+
+if (File.Exists(outputPath))
+{
+    try
+    {
+        var cachedData = JsonConvert.DeserializeObject<CachedMvpData>(
+            await File.ReadAllTextAsync(outputPath));
+
+        if (cachedData?.Mvps.Count == targetCount)
+        {
+            Console.WriteLine(
+                $"mvps.json already contains {targetCount} MVP profiles, matching the server. Skipping download.");
+            return;
+        }
+    }
+    catch (JsonException)
+    {
+        Console.WriteLine("Existing mvps.json is invalid. Downloading a fresh copy...");
+    }
+}
+
+// --- Step 2: Collect profile stubs via search ---
 var stubs = new List<CommunityLeaderProfile>();
 int pageIndex = 1;
-int totalAvailable = 0;
 
 Console.WriteLine("Fetching Microsoft MVP profiles...");
 
@@ -50,11 +84,7 @@ do
         break;
 
     if (pageIndex == 1)
-    {
-        totalAvailable = result.FilteredCount;
-        int target = maxCount.HasValue ? Math.Min(maxCount.Value, totalAvailable) : totalAvailable;
-        Console.WriteLine($"Total MVPs available: {totalAvailable}. Fetching details for {target}...");
-    }
+        Console.WriteLine($"Total MVPs available: {totalAvailable}. Fetching details for {targetCount}...");
 
     stubs.AddRange(result.CommunityLeaderProfiles);
     Console.WriteLine($"  Search page {pageIndex}: collected {stubs.Count} stubs...");
@@ -62,7 +92,7 @@ do
 
 } while (!maxCount.HasValue ? stubs.Count < totalAvailable : stubs.Count < maxCount.Value);
 
-// --- Step 2: Enrich each stub with full profile details ---
+// --- Step 3: Enrich each stub with full profile details ---
 var allProfiles = new List<MvpProfile>(stubs.Count);
 var semaphore = new SemaphoreSlim(MaxConcurrency);
 var tasks = stubs.Select(async (stub, idx) =>
@@ -111,7 +141,6 @@ await Task.WhenAll(tasks);
 // Sort by name for consistent output
 allProfiles.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
 
-string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "mvps.json");
 string json = JsonConvert.SerializeObject(new { total = allProfiles.Count, mvps = allProfiles }, Formatting.Indented);
 await File.WriteAllTextAsync(outputPath, json);
 
@@ -211,6 +240,11 @@ class SearchResponse
 {
     public List<CommunityLeaderProfile> CommunityLeaderProfiles { get; set; } = [];
     public int FilteredCount { get; set; }
+}
+
+class CachedMvpData
+{
+    public List<MvpProfile> Mvps { get; set; } = [];
 }
 
 class CommunityLeaderProfile
