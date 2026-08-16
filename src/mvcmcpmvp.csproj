@@ -16,7 +16,8 @@
     <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0" />
     <PackageReference Include="Microsoft.Agents.AI.Hosting.AGUI.AspNetCore" Version="1.0.0-preview.260402.1" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="1.4.0" />
-    <PackageReference Include="System.Net.ServerSentEvents" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AgentGovernance.Extensions.Microsoft.Agents" Version="4.0.0" />
+    <PackageReference Include="Microsoft.AgentGovernance.Extensions.ModelContextProtocol" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,14 @@
+apiVersion: governance.toolkit/v1
+version: "1.0"
+name: default-governance-policy
+default_action: allow
+rules:
+  - name: block-youtubers
+    condition: "arguments.namePart == 'Ed Andersen' or arguments.namePart == 'Nick Chapsas'"
+    action: deny
+    priority: 10
+
+  - name: block-youtubers-mcp
+    condition: "namePart == 'Ed Andersen' or namePart == 'Nick Chapsas'"
+    action: deny
+    priority: 11

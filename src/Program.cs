@@ -10,6 +10,12 @@ using mvcmcpmvp.Services;
 using OpenAI;
 using OpenAI.Chat;
 using OpenAI.Responses;
+using AgentGovernance.Integration;
+using AgentGovernance.Policy;
+using AgentGovernance;
+using AgentGovernance.Extensions.Microsoft.Agents;
+using System.Text.Json;
+using AgentGovernance.Extensions.ModelContextProtocol;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +25,14 @@ builder.Services.AddSingleton<MvpDataService>();
 builder.Services.AddAGUI();
 
 builder.Services.AddMcpServer()
+ .WithGovernance(options =>
+    {
+        options.PolicyPaths.Add("policies/default.yaml");
+        options.DefaultAgentId = "did:mesh:default";
+        options.EnablePromptInjectionDetection = true;
+        options.RequireAuthenticatedAgentId = false;
+        options.EnableAudit = true;
+    })
 .WithHttpTransport()
 .WithTools<MvpMcpTool>();
 
@@ -58,6 +72,26 @@ if (!string.IsNullOrWhiteSpace(app.Configuration["OpenAIApiKey"]))
 
     OpenAIClient client = new OpenAIClient(apiKey);
 
+    var config = new GovernanceOptions
+    {
+        PolicyPaths = new() { "policies/default.yaml" },
+        ConflictStrategy = ConflictResolutionStrategy.DenyOverrides,
+        EnablePromptInjectionDetection = true,    // Scan inputs for injection attacks
+    };
+
+    var kernel = new GovernanceKernel(config);
+
+    kernel.OnAllEvents(evt => Console.WriteLine("AI Governance: " + evt.Type + " " 
+    + string.Join(", ", evt.Data.Select(d => d.Key + ": " + JsonSerializer.Serialize(d.Value)))));
+    
+    var adapter = new AgentFrameworkGovernanceAdapter(
+    kernel,
+    new AgentFrameworkGovernanceOptions
+    {
+        DefaultAgentId = "did:mesh:default",
+        EnableFunctionMiddleware = true,
+    });
+
     var chatClient = client.GetChatClient(deploymentName);
     var agent = chatClient.AsIChatClient()
     .AsAIAgent(
@@ -66,7 +100,14 @@ if (!string.IsNullOrWhiteSpace(app.Configuration["OpenAIApiKey"]))
         tools: [AIFunctionFactory.Create(typeof(AgentTools).GetMethod("SearchMVPs")!, 
         new AgentTools(app.Services.GetRequiredService<MvpDataService>()))]);
 
-    app.MapAGUI("/mvpcopilot", agent);
+    var governedAgent = agent
+    .AsBuilder()
+    .WithGovernance(adapter)
+    .Build();
+
+    var safeAgent = new PromptInjectionDetectionAgent(governedAgent, kernel);
+
+    app.MapAGUI("/mvpcopilot", safeAgent);
 }
 
 app.UseRouting();

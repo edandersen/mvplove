@@ -12,7 +12,7 @@ for (int i = 0; i < args.Length; i++)
         maxCount = n;
 }
 
-const string BaseApi = "https://mavenapi-prod.azurewebsites.net/api";
+const string BaseApi = "https://mavenapi-prod.microsoft.com/api";
 const string SearchUrl = $"{BaseApi}/CommunityLeaders/search/";
 const int PageSize = 100;
 const int MaxConcurrency = 5;
@@ -23,7 +23,7 @@ var camelCaseSettings = new JsonSerializerSettings
 };
 
 using var http = new HttpClient();
-http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MVP-Fetcher/1.0)");
+http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0");
 http.DefaultRequestHeaders.Add("Origin", "https://mvp.microsoft.com");
 http.DefaultRequestHeaders.Add("Referer", "https://mvp.microsoft.com/");
 
