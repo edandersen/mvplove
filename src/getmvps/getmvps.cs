@@ -188,9 +188,9 @@ static async Task<DetailedProfile?> FetchProfileDetails(HttpClient http, string 
 {
     try
     {
-        var profileTask = http.GetStringAsync($"https://mavenapi-prod.azurewebsites.net/api/mvp/UserProfiles/public/{id}");
-        var contributionsTask = http.GetStringAsync($"https://mavenapi-prod.azurewebsites.net/api/Contributions/HighImpact/{id}/MVP");
-        var eventsTask = http.GetStringAsync($"https://mavenapi-prod.azurewebsites.net/api/Events/HighImpact/{id}/MVP");
+        var profileTask = http.GetStringAsync($"https://mavenapi-prod.microsoft.com/api/mvp/UserProfiles/public/{id}");
+        var contributionsTask = http.GetStringAsync($"https://mavenapi-prod.microsoft.com/api/Contributions/HighImpact/{id}/MVP");
+        var eventsTask = http.GetStringAsync($"https://mavenapi-prod.microsoft.com/api/Events/HighImpact/{id}/MVP");
 
         await Task.WhenAll(profileTask, contributionsTask, eventsTask);
 
