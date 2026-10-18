@@ -7,9 +7,18 @@
 
 @* Hero *@
 <div class="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white py-10 px-4">
-    <div class="max-w-screen-xl mx-auto">
-        <h1 class="text-3xl font-bold tracking-tight">Microsoft MVP Dashboard</h1>
-        <p class="text-blue-300 text-sm mt-1">@Model.TotalCount profiles · highlights from across the community</p>
+    <div class="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight">Microsoft MVP Dashboard</h1>
+            <p class="text-blue-300 text-sm mt-1">@Model.TotalCount profiles · highlights from across the community</p>
+        </div>
+        @* Quick searches *@
+        <div class="flex items-center gap-2 text-sm">
+            <span class="text-blue-300 text-xs uppercase tracking-wider">Quick search</span>
+            <a href="@Url.Action("Index", "Mvp", new { q = "Dave" })" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors">Dave</a>
+            <a href="@Url.Action("Index", "Mvp", new { q = "Nigel" })" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors">Nigel</a>
+            <a href="@Url.Action("Index", "Mvp", new { q = "Barry" })" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors">Barry</a>
+        </div>
     </div>
 </div>
 
