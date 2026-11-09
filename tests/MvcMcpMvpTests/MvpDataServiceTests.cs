@@ -205,6 +205,38 @@ public class MvpDataServiceTests
         Assert.Equal("Alice", results[1].Name);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-5)]
+    public void Search_Pagination_PageBelowOneUsesFirstPage(int page)
+    {
+        var svc = CreateService(MakeProfile("1", "Alice"), MakeProfile("2", "Bob"));
+
+        var (results, total) = svc.Search(null, [], [], [], null, page, 1);
+
+        Assert.Equal(2, total);
+        Assert.Equal("Alice", Assert.Single(results).Name);
+    }
+
+    [Fact]
+    public void Search_Pagination_LargeOffsetReturnsNoResultsWithoutOverflow()
+    {
+        var svc = CreateService(MakeProfile("1", "Alice"));
+
+        var (results, total) = svc.Search(null, [], [], [], null, int.MaxValue, int.MaxValue);
+
+        Assert.Equal(1, total);
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public void Search_Pagination_RejectsNonPositivePageSize()
+    {
+        var svc = CreateService(MakeProfile("1", "Alice"));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => svc.Search(null, [], [], [], null, 1, 0));
+    }
+
     // --- Search: pagination ---
 
     [Fact]

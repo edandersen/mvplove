@@ -111,6 +111,21 @@ public class MvpControllerTests
         Assert.All(vm.Results, r => Assert.Contains("Azure", r.AwardCategory));
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-5)]
+    public void Index_NormalizesPageBelowOne(int page)
+    {
+        var controller = CreateController(Make("1", "Alice"), Make("2", "Bob"));
+
+        var result = Assert.IsType<ViewResult>(controller.Index(null, [], [], [], null, page));
+        var vm = Assert.IsType<MvpBrowseViewModel>(result.Model);
+
+        Assert.Equal(1, vm.Page);
+        Assert.Equal(2, vm.Results.Count);
+        Assert.Equal("Alice", vm.Results[0].Name);
+    }
+
     [Fact]
     public void Index_HandlesPageNumber()
     {
@@ -222,6 +237,21 @@ public class MvpControllerTests
         var result = controller.Grid(null, [], [], [], null, 1) as PartialViewResult;
         var vm = Assert.IsType<MvpGridViewModel>(result.Model);
         Assert.Single(vm.Results);
+        Assert.Equal("Alice", vm.Results[0].Name);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-5)]
+    public void Grid_NormalizesPageBelowOne(int page)
+    {
+        var controller = CreateController(Make("1", "Alice"), Make("2", "Bob"));
+
+        var result = Assert.IsType<PartialViewResult>(controller.Grid(null, [], [], [], null, page));
+        var vm = Assert.IsType<MvpGridViewModel>(result.Model);
+
+        Assert.Equal(1, vm.Page);
+        Assert.Equal(2, vm.Results.Count);
         Assert.Equal("Alice", vm.Results[0].Name);
     }
 

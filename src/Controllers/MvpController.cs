@@ -18,6 +18,7 @@ public class MvpController : Controller
         string? sort,
         int page = 1)
     {
+        page = Math.Max(page, 1);
         awards    ??= [];
         countries ??= [];
         tech      ??= [];
@@ -53,6 +54,7 @@ public class MvpController : Controller
         string? sort,
         int page = 1)
     {
+        page = Math.Max(page, 1);
         awards    ??= [];
         countries ??= [];
         tech      ??= [];

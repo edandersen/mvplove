@@ -60,6 +60,10 @@ public class MvpDataService
         int page,
         int pageSize)
     {
+        if (pageSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
+        page = Math.Max(page, 1);
         IEnumerable<MvpProfile> q = _profiles;
 
         if (!string.IsNullOrWhiteSpace(query))
@@ -96,7 +100,10 @@ public class MvpDataService
 
         var list = q.ToList();
         var total = list.Count;
-        var results = list.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        var skip = ((long)page - 1) * pageSize;
+        List<MvpProfile> results = skip >= list.Count
+            ? []
+            : list.Skip((int)skip).Take(pageSize).ToList();
         return (results, total);
     }
 
